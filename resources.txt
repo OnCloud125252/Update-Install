@@ -1,0 +1,2 @@
+discord=https://discord.com/api/download?platform=linux&format=deb
+vsc=https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64
