@@ -14,7 +14,31 @@ ROCKET='\xF0\x9F\x9A\x80'
 CROSSMARK='\xE2\x9C\x98'
 HOURGLASS='\xE2\x8C\x9B'
 
-resources_file=$HOME/resources.txt
+resources_file=./resources.txt
+self_update_url=https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/updateinstall.sh
+
+handle_error() {
+    local exit_code=$1
+    local error_message=$2
+
+    echo -e "${RED}${CROSSMARK} Error: $error_message${NC}"
+    exit $exit_code
+}
+
+self_update() {
+    echo -e "${BLUE}Updating UpdateInstall ...${NC}"
+    echo ""
+
+    wget -q --show-progress -O "$(basename "$0")" "$self_update_url" || handle_error 1 "Failed to download the update."
+
+    mv "$(basename "$0")" "$0" >/dev/null 2>&1
+
+    chmod +x "$0"
+
+    echo ""
+    echo -e "${GREEN}${CHECKMARK} UpdateInstall updated successfully.${NC}"
+    exit 0
+}
 
 install_app() {
     app_name=$1
@@ -27,8 +51,7 @@ install_app() {
     if [[ -n ${download_urls["$app_name"]} ]]; then
         download_url=${download_urls["$app_name"]}
     else
-        echo -e "${GREEN}${CHECKMARK} Unknown application: $app_name${NC}"
-        exit 1
+        handle_error 1 "Unknown application: $app_name"
     fi
 
     app_filename=$(basename $(curl -L --head -w "%{url_effective}" "$download_url" 2>/dev/null | tail -n1))
@@ -43,7 +66,7 @@ install_app() {
         echo -e "${BLUE}Download complete, installing from downloaded /tmp/$app_filename ...${NC}"
         echo ""
     fi
-    sudo dpkg -i "$app_path"
+    sudo dpkg -i "$app_path" || handle_error 1 "Failed to install the application."
     package_name=$(dpkg --info "$app_path" | grep -oP "(?<=Package: ).*")
 
     echo ""
@@ -63,17 +86,15 @@ install_app() {
 }
 
 install_vencord() {
-    sh -c "$(curl -sS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
+    sh -c "$(curl -sS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)" || handle_error 1 "Failed to download Vencord."
 }
 
 if [ -z "$1" ]; then
-    echo -e "${RED}${CROSSMARK} Please provide an application name.${NC}"
-    exit 1
+    handle_error 1 "Please provide an application name."
 fi
 
 if [[ ! -f "$resources_file" ]]; then
-    echo -e "${RED}${CROSSMARK} Resources file does not exist.${NC}"
-    exit 1
+    handle_error 1 "Resources file does not exist."
 fi
 
 while IFS='=' read -r key value; do
@@ -83,9 +104,11 @@ while IFS='=' read -r key value; do
     fi
 done <"$resources_file"
 
-sudo -v
+sudo -v || handle_error 1 "Failed to acquire sudo privileges."
 
-if [ "$1" = "vencord" ]; then
+if [ "$1" = "update" ]; then
+    self_update
+elif [ "$1" = "vencord" ]; then
     install_vencord
 else
     app_name=$1
