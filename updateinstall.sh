@@ -21,6 +21,7 @@ handle_error() {
     local exit_code=$1
     local error_message=$2
 
+    echo ""
     echo -e "${RED}${CROSSMARK} Error: $error_message${NC}"
     exit $exit_code
 }
@@ -76,6 +77,7 @@ self_update() {
 
 install_app() {
     app_name=$1
+    bypass_cache=$2
 
     declare -A download_urls
     while IFS='=' read -r key value; do
@@ -90,10 +92,15 @@ install_app() {
 
     app_filename=$(basename $(curl -L --head -w "%{url_effective}" "$download_url" 2>/dev/null | tail -n1))
     app_path="/tmp/$app_filename"
-    if [ -f "$app_path" ]; then
+    if [ -f "$app_path" ] && [ "$bypass_cache" != "-f" ]; then
         echo -e "${BLUE}Cache found, installing from cached /tmp/$app_filename ...${NC}"
     else
-        echo -e "${BLUE}Cache not found, downloading resources from remote ...${NC}"
+        if [ "$bypass_cache" == "-f" ]; then
+            echo -e "${YELLOW}Bypassing cache checking.${NC}"
+            echo -e "${BLUE}Downloading resources from remote ...${NC}"
+        else
+            echo -e "${BLUE}Cache not found, downloading resources from remote ...${NC}"
+        fi
         echo ""
         wget -q --show-progress -O "$app_path" "$download_url"
         echo -e "${BLUE}Download complete, installing from downloaded /tmp/$app_filename ...${NC}"
@@ -128,7 +135,7 @@ if [[ ! -f "$resources_file" ]]; then
 fi
 
 while IFS='=' read -r key value; do
-    if [ "$key" == "update" ]; then
+    if [ "$key" = "update" ]; then
         echo -e "${RED}${CROSSMARK} Can't use 'update' as an app name in the resources file.${NC}"
         return 1
     fi
@@ -142,5 +149,6 @@ elif [ "$1" = "vencord" ]; then
     install_vencord
 else
     app_name=$1
-    install_app "$app_name"
+    bypass_cache=$2
+    install_app "$app_name" "$bypass_cache"
 fi
