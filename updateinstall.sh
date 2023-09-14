@@ -55,7 +55,8 @@ restart_app() {
     # Start the application in the background using 'nohup'
     nohup "$app_name" >/dev/null 2>&1 &
 
-    # Check if the application has started successfully
+    # Check if the application has started successfullyF
+    echo ""
     local new_pid=$(pgrep "$app_name")
     if [ -n "$new_pid" ]; then
         echo -e "${GREEN}${CHECKMARK} Application '$app_name' has been started.${NC}"
@@ -83,7 +84,7 @@ self_update() {
 
 install_app() {
     app_name=$1
-    bypass_cache=$2
+    option=$2
 
     declare -A download_urls
     while IFS='=' read -r key value; do
@@ -98,10 +99,10 @@ install_app() {
 
     app_filename=$(basename $(curl -L --head -w "%{url_effective}" "$download_url" 2>/dev/null | tail -n1))
     app_path="/tmp/$app_filename"
-    if [ -f "$app_path" ] && [ "$bypass_cache" != "-f" ]; then
+    if [ -f "$app_path" ] && [ "$option" != "-f" ]; then
         echo -e "${BLUE}Cache found, installing from cached /tmp/$app_filename ...${NC}"
     else
-        if [ "$bypass_cache" == "-f" ]; then
+        if [ "$option" == "-f" ]; then
             echo -e "${YELLOW}Bypassing cache checking.${NC}"
             echo -e "${BLUE}Downloading resources from remote ...${NC}"
         else
@@ -119,7 +120,7 @@ install_app() {
     echo -e "${YELLOW}Do you want to restart $package_name?${NC}"
     read -p "(y/n): " restart
     if [ "$restart" = "y" ] || [ "$restart" = "Y" ]; then
-        restart_app $package_name
+        restart_app "$package_name"
         echo ""
         echo -e "${GREEN}${CHECKMARK} Installation of $package_name completed.${NC}"
     else
@@ -150,11 +151,25 @@ done <"$resources_file"
 sudo -v || handle_error 1 "Failed to acquire sudo privileges."
 
 if [ "$1" = "update" ]; then
+    if [ $# -ne 1 ]; then
+        handle_error 1 "No arguments are allowed for the 'update' command."
+    fi
     self_update
 elif [ "$1" = "vencord" ]; then
+    if [ $# -ne 1 ]; then
+        handle_error 1 "No arguments are allowed for the 'vencord' command."
+    fi
     install_vencord
 else
     app_name=$1
-    bypass_cache=$2
-    install_app "$app_name" "$bypass_cache"
+    option=$2
+
+    valid_options=("" "-f")
+
+    # Check if the option is valid
+    if [[ ! " ${valid_options[@]} " =~ " $option " ]]; then
+        handle_error 1 "Invalid option: $option"
+    fi
+
+    install_app "$app_name" "$option"
 fi
