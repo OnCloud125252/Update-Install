@@ -85,6 +85,7 @@ self_update() {
 install_app() {
     app_name=$1
     option=$2
+    restart=$3
 
     declare -A download_urls
     while IFS='=' read -r key value; do
@@ -122,20 +123,28 @@ install_app() {
     sudo dpkg -i "$app_path" || handle_error 1 "Failed to install the application."
     package_name=$(dpkg --info "$app_path" | grep -oP "(?<=Package: ).*")
 
-    echo ""
-    echo -e "${YELLOW}Do you want to restart $package_name?${NC}"
-    read -p "(y/n): " restart
-    if [ "$restart" = "y" ] || [ "$restart" = "Y" ]; then
-        restart_app "$package_name"
+    if [ "$restart" != "norestart" ]; then
         echo ""
-        echo -e "${GREEN}${CHECKMARK} Installation of $package_name completed.${NC}"
+        echo -e "${YELLOW}Do you want to restart $package_name?${NC}"
+        read -p "(y/n): " restart
+        if [ "$restart" = "y" ] || [ "$restart" = "Y" ]; then
+            restart_app "$package_name"
+            echo ""
+            echo -e "${GREEN}${CHECKMARK} Installation of $package_name completed.${NC}"
+        else
+            echo ""
+            echo -e "${GREEN}${CHECKMARK} Installation of $package_name completed without restart.${NC}"
+        fi
     else
         echo ""
         echo -e "${GREEN}${CHECKMARK} Installation of $package_name completed without restart.${NC}"
     fi
+
 }
 
 update_all_apps() {
+    echo -e "${YELLOW}Ignoring all cache. No applications will be restarted automatically.${NC}"
+
     declare -A download_urls
     while IFS='=' read -r key value; do
         download_urls["$key"]="$value"
@@ -144,11 +153,12 @@ update_all_apps() {
     for app_name in "${!download_urls[@]}"; do
         echo ""
         echo -e "${BLUE}Updating $app_name ...${NC}"
-        install_app "$app_name" "-f"
+        install_app "$app_name" "-f" "norestart"
     done
 
     echo ""
     echo -e "${GREEN}${CHECKMARK} All applications have been updated.${NC}"
+    echo -e "${YELLOW}You may need to manually restart the updated applications.${NC}"
 }
 
 install_vencord() {
@@ -177,6 +187,7 @@ if [ "$1" = "updateall" ]; then
         handle_error 1 "No arguments are allowed for the 'updateall' command."
     fi
     update_all_apps
+    exit 0
 elif [ "$1" = "update" ]; then
     if [ $# -ne 1 ]; then
         handle_error 1 "No arguments are allowed for the 'update' command."
