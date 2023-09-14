@@ -55,7 +55,7 @@ restart_app() {
     # Start the application in the background using 'nohup'
     nohup "$app_name" >/dev/null 2>&1 &
 
-    # Check if the application has started successfullyF
+    # Check if the application has started successfully
     echo ""
     local new_pid=$(pgrep "$app_name")
     if [ -n "$new_pid" ]; then
@@ -139,7 +139,6 @@ install_app() {
         echo ""
         echo -e "${GREEN}${CHECKMARK} Installation of $package_name completed without restart.${NC}"
     fi
-
 }
 
 update_all_apps() {
@@ -173,10 +172,22 @@ if [[ ! -f "$resources_file" ]]; then
     handle_error 1 "Resources file does not exist."
 fi
 
+# Check if the last two bytes of the file are newline characters
+last_two_bytes=$(tail -c 2 "$resources_file" | od -An -tx1)
+if [[ $last_two_bytes != *"0a"* ]]; then
+    # Add a newline to the file
+    echo >>"$resources_file"
+fi
+
 while IFS='=' read -r key value; do
     if [ "$key" = "update" ]; then
-        echo -e "${RED}${CROSSMARK} Can't use 'update' as an app name in the resources file.${NC}"
-        return 1
+        handle_error 1 "Can't use 'update' as an app name in the resources file."
+    fi
+    if [ "$key" = "updateall" ]; then
+        handle_error 1 "Can't use 'updateall' as an app name in the resources file."
+    fi
+    if [ "$key" = "vencord" ]; then
+        handle_error 1 "'Vencord' is already included in the script, use 'updateinstall vencord' to download it."
     fi
 done <"$resources_file"
 
