@@ -99,8 +99,10 @@ install_app() {
 
     app_filename=$(basename $(curl -L --head -w "%{url_effective}" "$download_url" 2>/dev/null | tail -n1))
     app_path="/tmp/$app_filename"
+    temp_app_path="$app_path.temp"
+
     if [ -f "$app_path" ] && [ "$option" != "-f" ]; then
-        echo -e "${BLUE}Cache found, installing from cached /tmp/$app_filename ...${NC}"
+        echo -e "${BLUE}Cache found, installing from cached $app_path ...${NC}"
     else
         if [ "$option" == "-f" ]; then
             echo -e "${YELLOW}Bypassing cache checking.${NC}"
@@ -109,8 +111,12 @@ install_app() {
             echo -e "${BLUE}Cache not found, downloading resources from remote ...${NC}"
         fi
         echo ""
-        wget -q --show-progress -O "$app_path" "$download_url"
-        echo -e "${BLUE}Download complete, installing from downloaded /tmp/$app_filename ...${NC}"
+        wget -c --show-progress -O "$temp_app_path" "$download_url"
+        if [ $? -ne 0 ]; then
+            handle_error 1 "Failed to download the application."
+        fi
+        mv "$temp_app_path" "$app_path" >/dev/null 2>&1
+        echo -e "${BLUE}Download complete, installing from downloaded $app_path ...${NC}"
     fi
     echo ""
     sudo dpkg -i "$app_path" || handle_error 1 "Failed to install the application."
