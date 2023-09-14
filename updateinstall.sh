@@ -25,10 +25,44 @@ handle_error() {
     exit $exit_code
 }
 
-self_update() {
-    echo -e "${BLUE}Updating UpdateInstall ...${NC}"
-    echo ""
+restart_app() {
+    local app_name=$1
 
+    echo ""
+    echo -e "${MAGENTA}Restarting $app_name...${NC}"
+
+    # Find the PID of the running process based on the application name
+    local pid=$(pgrep "$app_name")
+
+    echo ""
+    if [ -n "$pid" ]; then
+        # Send a termination signal to the process and wait for it to exit
+        kill -TERM "$pid"
+        wait "$pid"
+
+        # Check if the process has terminated successfully
+        if ! kill -0 "$pid" 2>/dev/null; then
+            echo -e "${GREEN}${CHECKMARK} Application '$app_name' has been terminated successfully.${NC}"
+        else
+            echo -e "${RED}${CROSSMARK} Failed to terminate application '$app_name'.${NC}"
+            return 1
+        fi
+    else
+        echo -e "${YELLOW}No running instance of application '$app_name' found.${NC}"
+    fi
+
+    # Start the application in the background using 'nohup'
+    nohup "$app_name" >/dev/null 2>&1 &
+
+    echo ""
+    echo -e "${GREEN}${CHECKMARK} Application '$app_name' has been started.${NC}"
+}
+
+self_update() {
+    echo ""
+    echo -e "${BLUE}Updating UpdateInstall ...${NC}"
+
+    echo ""
     wget -q --show-progress -O "$(basename "$0")" "$self_update_url" || handle_error 1 "Failed to download the update."
 
     mv "$(basename "$0")" "$0" >/dev/null 2>&1
@@ -58,25 +92,21 @@ install_app() {
     app_path="/tmp/$app_filename"
     if [ -f "$app_path" ]; then
         echo -e "${BLUE}Cache found, installing from cached /tmp/$app_filename ...${NC}"
-        echo ""
     else
         echo -e "${BLUE}Cache not found, downloading resources from remote ...${NC}"
         echo ""
         wget -q --show-progress -O "$app_path" "$download_url"
         echo -e "${BLUE}Download complete, installing from downloaded /tmp/$app_filename ...${NC}"
-        echo ""
     fi
+    echo ""
     sudo dpkg -i "$app_path" || handle_error 1 "Failed to install the application."
     package_name=$(dpkg --info "$app_path" | grep -oP "(?<=Package: ).*")
 
     echo ""
     echo -e "${YELLOW}Do you want to restart $package_name?${NC}"
     read -p "(y/n): " restart
-    echo ""
     if [ "$restart" = "y" ] || [ "$restart" = "Y" ]; then
-        echo -e "${MAGENTA}Restarting $package_name...${NC}"
-        pkill -f "$package_name"
-        $package_name
+        restart_app $package_name
         echo ""
         echo -e "${GREEN}${CHECKMARK} Installation of $package_name completed.${NC}"
     else
