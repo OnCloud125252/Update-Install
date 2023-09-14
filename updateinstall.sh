@@ -55,8 +55,14 @@ restart_app() {
     # Start the application in the background using 'nohup'
     nohup "$app_name" >/dev/null 2>&1 &
 
-    echo ""
-    echo -e "${GREEN}${CHECKMARK} Application '$app_name' has been started.${NC}"
+    # Check if the application has started successfully
+    local new_pid=$(pgrep "$app_name")
+    if [ -n "$new_pid" ]; then
+        echo -e "${GREEN}${CHECKMARK} Application '$app_name' has been started.${NC}"
+    else
+        echo -e "${RED}${CROSSMARK} Failed to start application '$app_name'.${NC}"
+        return 1
+    fi
 }
 
 self_update() {
