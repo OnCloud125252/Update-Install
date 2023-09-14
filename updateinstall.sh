@@ -105,7 +105,7 @@ install_app() {
         echo -e "${BLUE}Cache found, installing from cached $app_path ...${NC}"
     else
         if [ "$option" == "-f" ]; then
-            echo -e "${YELLOW}Bypassing cache checking.${NC}"
+            echo -e "${YELLOW}User has bypassed cache checking.${NC}"
             echo -e "${BLUE}Downloading resources from remote ...${NC}"
         else
             echo -e "${BLUE}Cache not found, downloading resources from remote ...${NC}"
@@ -135,6 +135,22 @@ install_app() {
     fi
 }
 
+update_all_apps() {
+    declare -A download_urls
+    while IFS='=' read -r key value; do
+        download_urls["$key"]="$value"
+    done <"$resources_file"
+
+    for app_name in "${!download_urls[@]}"; do
+        echo ""
+        echo -e "${BLUE}Updating $app_name ...${NC}"
+        install_app "$app_name" "-f"
+    done
+
+    echo ""
+    echo -e "${GREEN}${CHECKMARK} All applications have been updated.${NC}"
+}
+
 install_vencord() {
     sh -c "$(curl -sS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)" || handle_error 1 "Failed to download Vencord."
 }
@@ -156,7 +172,12 @@ done <"$resources_file"
 
 sudo -v || handle_error 1 "Failed to acquire sudo privileges."
 
-if [ "$1" = "update" ]; then
+if [ "$1" = "updateall" ]; then
+    if [ $# -ne 1 ]; then
+        handle_error 1 "No arguments are allowed for the 'updateall' command."
+    fi
+    update_all_apps
+elif [ "$1" = "update" ]; then
     if [ $# -ne 1 ]; then
         handle_error 1 "No arguments are allowed for the 'update' command."
     fi
