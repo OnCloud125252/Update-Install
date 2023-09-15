@@ -72,8 +72,8 @@ UpdateInstall provides several built-in commands:
 
 > [!INFO]\
 > Yes, UpdateInstall have Vencord installer built-in because:
-> 1. he original Discord sucks :<
-> 2. Why not?
+> \1. The original Discord sucks :<
+> \2. Why not?
 
 ## Resources File
 
