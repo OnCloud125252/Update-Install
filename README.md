@@ -62,14 +62,18 @@ UpdateInstall provides several built-in commands:
 
 - `ui updateresources` **- Update Resources File:**  
   Use this command to update the resources file.
-  > [!WARNING]\
-  > Please note that running this command will replace the current resources file with an updated version.
+  ***Please note that running this command will replace the current resources file with an updated version.***
 
 - `ui updateall` **- Update All Apps:**  
   This command updates all the apps listed in the resources file.
 
 - `ui vencord` **- Install Vencord:**  
   Use this command to install Vencord. Note that you may need to reinstall Vencord after updating Discord.
+
+> [!INFO]\
+> Yes, UpdateInstall have Vencord installer built-in because:
+> 1. he original Discord sucks :<
+> 2. Why not?
 
 ## Resources File
 
