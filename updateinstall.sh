@@ -72,7 +72,7 @@ self_update() {
     echo -e "${BLUE}Updating UpdateInstall ...${NC}"
 
     echo ""
-    wget -q --show-progress -O "$installation_directory/$(basename "$0")" "$self_update_url" || handle_error 1 "Failed to download the update."
+    wget --no-cache -q --show-progress -O "$installation_directory/$(basename "$0")" "$self_update_url" || handle_error 1 "Failed to download the update."
 
     mv "$installation_directory/$(basename "$0")" "$0" >/dev/null 2>&1
 
@@ -113,7 +113,7 @@ install_app() {
             echo -e "${BLUE}Cache not found, downloading resources from remote ...${NC}"
         fi
         echo ""
-        wget -c --show-progress -O "$temp_app_path" "$download_url"
+        wget --no-cache -c --show-progress -O "$temp_app_path" "$download_url"
         if [ $? -ne 0 ]; then
             handle_error 1 "Failed to download the application."
         fi
@@ -172,7 +172,7 @@ update_resources() {
     read -p "(y/n): " confirm
     echo ""
     if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
-        wget -q https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/resources.txt -O "$resources_file" || handle_error 1 "Failed to update the resources file."
+        wget --no-cache -q https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/resources.txt -O "$resources_file" || handle_error 1 "Failed to update the resources file."
         echo -e "${GREEN}${CHECKMARK} Resources file updated successfully.${NC}"
     else
         echo -e "${YELLOW}Update canceled.${NC}"

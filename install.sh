@@ -29,14 +29,14 @@ mkdir -p "$installation_directory"
 
 echo ""
 echo -e "${MAGENTA}Downloading dependencies ...${NC}"
-wget -q https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/updateinstall.sh -O "$installation_directory/updateinstall.sh"
+wget --no-cache -q https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/updateinstall.sh -O "$installation_directory/updateinstall.sh"
 echo -e "  ${MAGENTA}${CHECKMARK} updateinstall.sh${NC}"
 
 resources_file="$installation_directory/resources.txt"
 if [[ -f "$resources_file" ]]; then
     echo -e "  ${YELLOW}${CROSSMARK} resources.txt (already exists)${NC}"
 else
-    wget -q https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/resources.txt -O "$resources_file"
+    wget --no-cache -q https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/resources.txt -O "$resources_file"
     echo -e "  ${MAGENTA}${CHECKMARK} resources.txt${NC}"
 fi
 
