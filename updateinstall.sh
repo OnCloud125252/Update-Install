@@ -185,7 +185,7 @@ if [ -z "$1" ]; then
 fi
 
 if [[ ! -f "$resources_file" ]]; then
-    handle_error 1 "Resources file does not exist."
+    handle_error 1 "Resources file does not exist.\nUse \"wget -qO- https://short.on-cloud.tw/UpdateInstall | bash\" to reinstall UpdateInstall."
 fi
 
 # Check if the last two bytes of the file are newline characters
