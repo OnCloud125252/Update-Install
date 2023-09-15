@@ -53,6 +53,24 @@ This will force UpdateInstall to redownload the Discord package, even if it is a
 > [!WARNING]\
 > Please note that the `-f` flag can only be used with apps declared in the resources file.
 
+## Default Commands
+
+UpdateInstall provides several built-in commands:
+
+- `ui update` **- Update UpdateInstall:**  
+  This command updates the UpdateInstall tool itself.
+
+- `ui updateresources` **- Update Resources File:**  
+  Use this command to update the resources file.
+> [!WARNING]\
+> Please note that running this command will replace the current resources file with an updated version.
+
+- `ui updateall` **- Update All Apps:**  
+  This command updates all the apps listed in the resources file.
+
+- `ui vencord` **- Install Vencord:**  
+  Use this command to install Vencord. Note that you may need to reinstall Vencord after updating Discord.
+
 ## Resources File
 
 You can customize the installation command for an app by editing the resources file.  
