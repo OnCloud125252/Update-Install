@@ -166,11 +166,12 @@ install_vencord() {
 update_resources() {
     echo -e "${BLUE}Updating resources file ...${NC}"
 
-    echo -e "${YELLOW}This action WILL REPLACE the current resources file. Are you sure you want to continue?${NC}"
+    echo ""
+    echo -e "${YELLOW}This action WILL REPLACE the current resources file in $PWD. Are you sure you want to continue?${NC}"
     read -p "(y/n): " confirm
     echo ""
     if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
-        wget -q -O "$resources_file" "$self_update_url" || handle_error 1 "Failed to update the resources file."
+        wget -q https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/resources.txt -O "$resources_file" || handle_error 1 "Failed to update the resources file."
         echo -e "${GREEN}${CHECKMARK} Resources file updated successfully.${NC}"
     else
         echo -e "${YELLOW}Update canceled.${NC}"
