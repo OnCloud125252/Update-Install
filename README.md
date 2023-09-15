@@ -62,8 +62,8 @@ UpdateInstall provides several built-in commands:
 
 - `ui updateresources` **- Update Resources File:**  
   Use this command to update the resources file.
-> [!WARNING]\
-> Please note that running this command will replace the current resources file with an updated version.
+  > [!WARNING]\
+  > Please note that running this command will replace the current resources file with an updated version.
 
 - `ui updateall` **- Update All Apps:**  
   This command updates all the apps listed in the resources file.
