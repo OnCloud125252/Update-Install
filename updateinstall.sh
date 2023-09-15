@@ -71,9 +71,9 @@ self_update() {
     echo -e "${BLUE}Updating UpdateInstall ...${NC}"
 
     echo ""
-    wget -q --show-progress -O "$(basename "$0")" "$self_update_url" || handle_error 1 "Failed to download the update."
+    wget -q --show-progress -O "$PWD/$(basename "$0")" "$self_update_url" || handle_error 1 "Failed to download the update."
 
-    mv "$(basename "$0")" "$0" >/dev/null 2>&1
+    mv "$PWD/$(basename "$0")" "$0" >/dev/null 2>&1
 
     chmod +x "$0"
 
