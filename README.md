@@ -71,7 +71,7 @@ UpdateInstall provides several built-in commands:
   Use this command to install Vencord. Note that you may need to reinstall Vencord after updating Discord.
 
 > [!NOTE]\
-> Yes, UpdateInstall have Vencord installer built-in because:
+> Yes, UpdateInstall have built-in Vencord installer because:
 > 1. The original Discord sucks :<
 > 2. Why not?
 
