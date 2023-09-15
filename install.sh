@@ -51,3 +51,16 @@ if [[ -d "$installation_directory" ]]; then
 else
     echo -e "${GREEN}${ROCKET} UpdateInstall has been installed successfully.${NC}"
 fi
+
+echo ""
+echo -e "${BLUE}Note:"
+echo -e "To edit the resources file, please edit the following file:"
+echo -e "$resources_file"
+echo ""
+echo -e "Command Usage:${NC}"
+echo -e "To execute the main script, use the 'updateinstall' or 'ui' command in the terminal."
+echo -e "Examples:"
+echo -e "Updating UpdateInstall > updateinstall update"
+echo -e "                       > ui update"
+echo -e "Installing vencord > updateinstall vencord"
+echo -e "                   > ui vencord${NC}"
