@@ -127,12 +127,11 @@ install_app() {
         echo ""
         echo -e "${YELLOW}Do you want to restart $package_name?${NC}"
         read -p "(y/n): " restart
+        echo ""
         if [ "$restart" = "y" ] || [ "$restart" = "Y" ]; then
             restart_app "$package_name"
-            echo ""
             echo -e "${GREEN}${CHECKMARK} Installation of $package_name completed.${NC}"
         else
-            echo ""
             echo -e "${GREEN}${CHECKMARK} Installation of $package_name completed without restart.${NC}"
         fi
     else
@@ -164,6 +163,21 @@ install_vencord() {
     sh -c "$(curl -sS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)" || handle_error 1 "Failed to download Vencord."
 }
 
+update_resources() {
+    echo -e "${BLUE}Updating resources file ...${NC}"
+
+    echo -e "${YELLOW}This action WILL REPLACE the current resources file. Are you sure you want to continue?${NC}"
+    read -p "(y/n): " confirm
+    echo ""
+    if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+        wget -q -O "$resources_file" "$self_update_url" || handle_error 1 "Failed to update the resources file."
+        echo -e "${GREEN}${CHECKMARK} Resources file updated successfully.${NC}"
+    else
+        echo -e "${YELLOW}Update canceled.${NC}"
+        return
+    fi
+}
+
 if [ -z "$1" ]; then
     handle_error 1 "Please provide an application name."
 fi
@@ -189,6 +203,9 @@ while IFS='=' read -r key value; do
     if [ "$key" = "vencord" ]; then
         handle_error 1 "'Vencord' is already included in the script, use 'updateinstall vencord' to download it."
     fi
+    if [ "$key" = "updateresources" ]; then
+        handle_error 1 "Can't use 'updateresources' as an app name in the resources file."
+    fi
 done <"$resources_file"
 
 sudo -v || handle_error 1 "Failed to acquire sudo privileges."
@@ -209,6 +226,11 @@ elif [ "$1" = "vencord" ]; then
         handle_error 1 "No arguments are allowed for the 'vencord' command."
     fi
     install_vencord
+elif [ "$1" = "updateresources" ]; then
+    if [ $# -ne 1 ]; then
+        handle_error 1 "No arguments are allowed for the 'updateresources' command."
+    fi
+    update_resources
 else
     app_name=$1
     option=$2
