@@ -14,7 +14,8 @@ ROCKET='\xF0\x9F\x9A\x80'
 CROSSMARK='\xE2\x9C\x98'
 HOURGLASS='\xE2\x8C\x9B'
 
-resources_file=./resources.txt
+installation_directory=$HOME/updateinstall
+resources_file=$HOME/updateinstall/resources.txt
 self_update_url=https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/updateinstall.sh
 
 handle_error() {
@@ -71,9 +72,9 @@ self_update() {
     echo -e "${BLUE}Updating UpdateInstall ...${NC}"
 
     echo ""
-    wget -q --show-progress -O "$PWD/$(basename "$0")" "$self_update_url" || handle_error 1 "Failed to download the update."
+    wget -q --show-progress -O "$installation_directory/$(basename "$0")" "$self_update_url" || handle_error 1 "Failed to download the update."
 
-    mv "$PWD/$(basename "$0")" "$0" >/dev/null 2>&1
+    mv "$installation_directory/$(basename "$0")" "$0" >/dev/null 2>&1
 
     chmod +x "$0"
 
@@ -167,7 +168,7 @@ update_resources() {
     echo -e "${BLUE}Updating resources file ...${NC}"
 
     echo ""
-    echo -e "${YELLOW}This action WILL REPLACE the current resources file in $PWD. Are you sure you want to continue?${NC}"
+    echo -e "${YELLOW}This action WILL REPLACE the current resources file in $installation_directory. Are you sure you want to continue?${NC}"
     read -p "(y/n): " confirm
     echo ""
     if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
