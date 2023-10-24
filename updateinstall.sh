@@ -212,6 +212,8 @@ done <"$resources_file"
 
 sudo -v || handle_error 1 "Failed to acquire sudo privileges."
 
+which curl &> /dev/null || sudo apt install curl
+
 if [ "$1" = "updateall" ]; then
     if [ $# -ne 1 ]; then
         handle_error 1 "No arguments are allowed for the 'updateall' command."
