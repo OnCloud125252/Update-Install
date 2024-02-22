@@ -127,7 +127,7 @@ install_app() {
     if [ "$restart" != "norestart" ]; then
         echo ""
         echo -e "${YELLOW}Do you want to restart $package_name?${NC}"
-        read -p "(y/n): " restart
+        read -p "(y/N): " restart
         echo ""
         if [ "$restart" = "y" ] || [ "$restart" = "Y" ]; then
             restart_app "$package_name"
