@@ -74,7 +74,7 @@ self_update() {
     echo ""
     wget --no-cache -q --show-progress -O "$installation_directory/$(basename "$0")" "$self_update_url" || handle_error 1 "Failed to download the update."
 
-    mv "$installation_directory/$(basename "$0")" "$0" >/dev/null 2>&1
+    mv -f "$installation_directory/$(basename "$0")" "$0" >/dev/null 2>&1
 
     chmod +x "$0"
 
