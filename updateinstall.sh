@@ -171,7 +171,7 @@ update_resources() {
 
   echo ""
   echo -e "${YELLOW}This action WILL REPLACE the current resources file in $installation_directory. Are you sure you want to continue?${NC}"
-  read -p "(y/n): " confirm
+  read -p "(y/N): " confirm
   echo ""
   if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
     wget --no-cache -q https://raw.githubusercontent.com/OnCloud125252/Update-Install/main/resources.txt -O "$resources_file" || handle_error 1 "Failed to update the resources file."
